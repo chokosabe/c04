@@ -66,9 +66,7 @@ class CryptoTradingContinuousEnv(gym.Env):
         # Action: 1-dim value indicating a fraction amount of shares to Buy (0 to 1) or
         # sell (-1 to 0). The fraction is taken on the allowable number of
         # shares that can be bought or sold based on the account balance (no margin).
-        self.action_space = spaces.Box(
-            low=np.array([-1]), high=np.array([1]), dtype=np.float
-        )
+        self.action_space = spaces.Box(low=-np.inf, high=np.inf, dtype=np.float)
 
         self.observation_features = [
             # "bid",
@@ -96,7 +94,7 @@ class CryptoTradingContinuousEnv(gym.Env):
 
         reward = self.account_value - self.opening_account_balance  # Profit (loss)
         done = self.account_value <= 0 or self.current_step * self.horizon >= len(
-            self.ohlcv_df.loc[:, "Open"].values
+            self.ohlcv_df.loc[:, "high"].values
         )
 
         obs = self.get_observation()
