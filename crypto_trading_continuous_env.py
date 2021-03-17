@@ -35,31 +35,32 @@ class CryptoTradingContinuousEnv(gym.Env):
             env_config (Dict): Env configuration values
         """
         super(CryptoTradingContinuousEnv, self).__init__()
-        self.ticker = env_config.get("ticker", "BTCUSD")
-        data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
-        self.exchange = env_config["exchange"]
-        freq = env_config["frequency"]
-        if freq == "daily":
-            self.freq_suffix = "d"
-        elif freq == "hourly":
-            self.freq_suffix = "1hr"
-        elif freq == "minutes":
-            self.freq_suffix = "1min"
+        # self.ticker = env_config.get("ticker", "BTCUSD")
+        # data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
+        # self.exchange = env_config["exchange"]
+        # freq = env_config["frequency"]
+        # if freq == "daily":
+        #     self.freq_suffix = "d"
+        # elif freq == "hourly":
+        #     self.freq_suffix = "1hr"
+        # elif freq == "minutes":
+        #     self.freq_suffix = "1min"
 
-        self.ticker_file_stream = os.path.join(
-            f"{data_dir}",
-            f"{'_'.join([self.exchange, self.ticker, self.freq_suffix])}.csv",
-        )
-        assert os.path.isfile(
-            self.ticker_file_stream
-        ), f"Crypto data file stream not found at: data/{self.ticker_file_stream}.csv"
+        # self.ticker_file_stream = os.path.join(
+        #     f"{data_dir}",
+        #     f"{'_'.join([self.exchange, self.ticker, self.freq_suffix])}.csv",
+        # )
+        # assert os.path.isfile(
+        #     self.ticker_file_stream
+        # ), f"Crypto data file stream not found at: data/{self.ticker_file_stream}.csv"
         # Cryptocurrency exchange data stream. An offline file stream is used. Alternatively, a web
         # API can be used to pull live data.
-        self.ohlcv_df = (
-            pd.read_csv(self.ticker_file_stream, skiprows=1)
-            .sort_values(by="Date")
-            .reset_index(drop=True)
-        )
+        # self.ohlcv_df = (
+        #     pd.read_csv(self.ticker_file_stream, skiprows=1)
+        #     .sort_values(by="Date")
+        #     .reset_index(drop=True)
+        # )
+        self.ohlcv_df = env_config.get("df")
 
         self.opening_account_balance = env_config["opening_account_balance"]
         # Action: 1-dim value indicating a fraction amount of shares to Buy (0 to 1) or
@@ -70,12 +71,12 @@ class CryptoTradingContinuousEnv(gym.Env):
         )
 
         self.observation_features = [
-            "Open",
-            "High",
-            "Low",
-            "Close",
-            "Volume BTC",
-            "Volume USD",
+            # "bid",
+            "high",
+            "low",
+            # "offer",
+            # "Volume BTC",
+            # "Volume USD",
         ]
         self.horizon = env_config.get("observation_horizon_sequence_length")
         self.observation_space = spaces.Box(
@@ -159,8 +160,8 @@ class CryptoTradingContinuousEnv(gym.Env):
         order_fraction_of_allowable_coins = abs(action)
         # Stochastically determine the current stock price based on Market Open & Close
         current_price = random.uniform(
-            self.ohlcv_df.loc[self.current_step, "Open"],
-            self.ohlcv_df.loc[self.current_step, "Close"],
+            self.ohlcv_df.loc[self.current_step, "high"],
+            self.ohlcv_df.loc[self.current_step, "low"],
         )
         if order_type == "buy":
             allowable_coins = int(self.cash_balance / current_price)
