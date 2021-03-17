@@ -68,10 +68,10 @@ class CryptoTradingVisualEnv(gym.Env):
         self.action_space = spaces.Discrete(3)
 
         self.observation_features = [
-            "Open",
-            "High",
-            "Low",
-            "Close",
+            "bid",
+            "high",
+            "low",
+            "offer",
             # "Volume ETH",
             # "Volume USD",
         ]
@@ -158,8 +158,8 @@ class CryptoTradingVisualEnv(gym.Env):
 
         # Stochastically determine the current stock price based on Market Open & Close
         current_price = random.uniform(
-            self.ohlcv_df.loc[self.current_step, "Open"],
-            self.ohlcv_df.loc[self.current_step, "Close"],
+            self.ohlcv_df.loc[self.current_step, "high"],
+            self.ohlcv_df.loc[self.current_step, "low"],
         )
         if order_type == "buy":
             allowable_coins = int(self.cash_balance / current_price)
