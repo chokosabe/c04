@@ -111,26 +111,26 @@ class CryptoTradingContinuousEnv(gym.Env):
         self.cost_basis = 0
         self.current_step = 0
         self.trades = []
-        if self.viz is None:
-            self.viz = TradeVisualizer(
-                self.ticker,
-                self.ticker_file_stream,
-                "TFRL-Cookbook Ch4-CryptoTradingEnv",
-                skiprows=1,  # Skip the first line with the data download source URL
-            )
+        # if self.viz is None:
+        #     self.viz = TradeVisualizer(
+        #         self.ticker,
+        #         self.ticker_file_stream,
+        #         "TFRL-Cookbook Ch4-CryptoTradingEnv",
+        #         skiprows=1,  # Skip the first line with the data download source URL
+        #     )
 
         return self.get_observation()
 
     def render(self, **kwargs):
         # Render the environment to the screen
-
-        if self.current_step > self.horizon:
-            self.viz.render(
-                self.current_step,
-                self.account_value,
-                self.trades,
-                window_size=self.horizon,
-            )
+        pass
+        # if self.current_step > self.horizon:
+        #     self.viz.render(
+        #         self.current_step,
+        #         self.account_value,
+        #         self.trades,
+        #         window_size=self.horizon,
+        #     )
 
     def close(self):
         if self.viz is not None:
